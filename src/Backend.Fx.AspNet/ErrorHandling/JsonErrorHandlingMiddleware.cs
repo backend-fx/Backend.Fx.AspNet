@@ -76,8 +76,7 @@ namespace Backend.Fx.AspNet.ErrorHandling
 
         protected virtual string SerializeErrors(Errors errors)
         {
-            var errorResponse = new ErrorResponse(errors);
-            return JsonSerializer.Serialize(errorResponse, JsonSerializerOptions);
+            return new ErrorResponse(errors).ToJsonString();
         }
     }
 }
