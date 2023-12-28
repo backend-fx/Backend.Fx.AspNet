@@ -1,0 +1,36 @@
+# User-specific files
+*.suo
+*.user
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Nn]upkg/
+artifacts/
+
+# Visual Studio 2015 cache/options directory
+.vs/
+.vscode/
+
+# ReSharper is a .NET coding add-in
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# DotCover is a Code Coverage Tool
+*.dotCover
+
+# NuGet v3's project.json files produces more ignorable files
+*.nuget.props
+*.nuget.targets
+
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+#nuke.build
+.nuke/temp

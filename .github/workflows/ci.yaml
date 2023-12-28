@@ -1,0 +1,30 @@
+name: continuous
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  nuke-build:
+    name: nuke-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: nuke build
+        run: ./build.sh
+        env:
+            MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
+            NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
