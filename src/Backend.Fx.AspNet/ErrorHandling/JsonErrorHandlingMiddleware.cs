@@ -76,12 +76,8 @@ namespace Backend.Fx.AspNet.ErrorHandling
 
         protected virtual string SerializeErrors(Errors errors)
         {
-            var errorShape = new ErrorShape
-            {
-                Errors = errors.ToDictionary(kvp => kvp.Key == "" ? "_error" : kvp.Key, kvp => kvp.Value)
-            };
-            
-            return JsonSerializer.Serialize(errorShape, JsonSerializerOptions);
+            var errorResponse = new ErrorResponse(errors);
+            return JsonSerializer.Serialize(errorResponse, JsonSerializerOptions);
         }
     }
 }

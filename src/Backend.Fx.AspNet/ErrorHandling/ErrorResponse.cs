@@ -17,6 +17,7 @@ namespace Backend.Fx.AspNet.ErrorHandling
             GenericError = errors
                 .Where(kvp => kvp.Key == Backend.Fx.Exceptions.Errors.GenericErrorKey)
                 .Select(kvp => string.Join(Environment.NewLine, kvp.Value)).FirstOrDefault();
+            
             Errors = errors
                 .Where(kvp => kvp.Key != Backend.Fx.Exceptions.Errors.GenericErrorKey)
                 .Select(kvp => new SerializableError { Key = kvp.Key, Errors = kvp.Value })
