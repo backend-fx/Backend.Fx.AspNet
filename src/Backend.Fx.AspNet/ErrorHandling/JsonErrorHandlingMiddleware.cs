@@ -10,67 +10,78 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using NodaTime;
-using NodaTime.Serialization.SystemTextJson;
 
-namespace Backend.Fx.AspNet.ErrorHandling;
-
-[PublicAPI]
-public class JsonErrorHandlingMiddleware : ErrorHandlingMiddleware
+namespace Backend.Fx.AspNet.ErrorHandling
 {
-    private readonly bool _showInternalServerErrorDetails;
-    private readonly ILogger _logger = Log.Create<JsonErrorHandlingMiddleware>();
-
-    private static readonly JsonSerializerOptions SerializerOptions =
-        new JsonSerializerOptions { WriteIndented = true }.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-
-
-    public JsonErrorHandlingMiddleware(RequestDelegate next, bool showInternalServerErrorDetails)
-        : base(next)
+    [PublicAPI]
+    public class JsonErrorHandlingMiddleware : ErrorHandlingMiddleware
     {
-        _showInternalServerErrorDetails = showInternalServerErrorDetails;
-    }
+        private readonly bool _showInternalServerErrorDetails;
+        private static readonly ILogger Logger = Log.Create<JsonErrorHandlingMiddleware>();
 
-    protected override Task<bool> ShouldHandle(HttpContext context)
-    {
-        // this middleware only handles requests that accept json as response
-        IList<MediaTypeHeaderValue> accept = context.Request.GetTypedHeaders().Accept;
-        return Task.FromResult(accept.Any(mth => mth.Type == "application" && mth.SubType == "json"));
-    }
-
-    protected override async Task HandleClientError(HttpContext context, int httpStatusCode, string message,
-        ClientException exception)
-    {
-        if (context.Response.HasStarted)
+        protected JsonSerializerOptions JsonSerializerOptions = new()
         {
-            _logger.LogWarning("exception cannot be handled correctly, because the response has already started");
-            return;
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        };
+        
+        public JsonErrorHandlingMiddleware(RequestDelegate next, bool showInternalServerErrorDetails)  : base(next)
+        {
+            _showInternalServerErrorDetails = showInternalServerErrorDetails;
         }
 
-        // convention: only the errors array will be transmitted to the client, allowing technical (possibly
-        // revealing) information in the exception message.
-        Errors errors = exception.HasErrors()
-            ? exception.Errors
-            : new Errors($"HTTP{httpStatusCode}: {message}");
-
-        context.Response.StatusCode = httpStatusCode;
-        context.Response.ContentType = "application/json; charset=utf-8";
-        await context.Response.WriteAsync(new ErrorResponse(errors).ToJsonString());
-    }
-
-    protected override async Task HandleServerError(HttpContext context, Exception exception)
-    {
-        if (context.Response.HasStarted)
+        protected override Task<bool> ShouldHandle(HttpContext context)
         {
-            _logger.LogWarning("exception cannot be handled correctly, because the response has already started");
-            return;
+            // this middleware only handles requests that accept json as response
+            IList<MediaTypeHeaderValue> accept = context.Request.GetTypedHeaders().Accept;
+            return Task.FromResult(accept.Any(mth => mth.Type == "application" && mth.SubType == "json"));
         }
 
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-        var responseContent = _showInternalServerErrorDetails
-            ? JsonSerializer.Serialize(new { message = exception.Message, stackTrace = exception.StackTrace }, SerializerOptions)
-            : JsonSerializer.Serialize(new { message = "An internal error occured" }, SerializerOptions);
-        context.Response.ContentType = "application/json; charset=utf-8";
-        await context.Response.WriteAsync(responseContent);
+        protected override async Task HandleClientError(HttpContext context, int httpStatusCode, string message, ClientException exception)
+        {
+            if (context.Response.HasStarted)
+            {
+                Logger.LogWarning("exception cannot be handled correctly, because the response has already started");
+                return;
+            }
+
+            // convention: only the errors array will be transmitted to the client, allowing technical (possibly
+            // revealing) information in the exception message.
+            Errors errors = exception.HasErrors()
+                                ? exception.Errors
+                                : new Errors($"HTTP{httpStatusCode}: {message}");
+
+            context.Response.StatusCode = httpStatusCode;
+            string serializedErrors = SerializeErrors(errors);
+            context.Response.ContentType = "application/json; charset=utf-8";
+            await context.Response.WriteAsync(serializedErrors);
+        }
+
+        protected override async Task HandleServerError(HttpContext context, Exception exception)
+        {
+            if (context.Response.HasStarted)
+            {
+                Logger.LogWarning("exception cannot be handled correctly, because the response has already started");
+                return;
+            }
+
+            context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+            var responseContent = _showInternalServerErrorDetails
+                ? JsonSerializer.Serialize(new { message = exception.Message, stackTrace = exception.StackTrace }, JsonSerializerOptions)
+                : JsonSerializer.Serialize(new { message = "An internal error occurred" }, JsonSerializerOptions);
+
+            context.Response.ContentType = "application/json; charset=utf-8";
+            await context.Response.WriteAsync(responseContent);
+        }
+
+        protected virtual string SerializeErrors(Errors errors)
+        {
+            var errorShape = new ErrorShape
+            {
+                Errors = errors.ToDictionary(kvp => kvp.Key == "" ? "_error" : kvp.Key, kvp => kvp.Value)
+            };
+            
+            return JsonSerializer.Serialize(errorShape, JsonSerializerOptions);
+        }
     }
 }
