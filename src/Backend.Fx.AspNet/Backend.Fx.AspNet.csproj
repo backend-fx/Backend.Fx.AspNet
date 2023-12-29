@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <OutputType>Library</OutputType>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <IsPackable>true</IsPackable>
+    </PropertyGroup>
+
+
+    <PropertyGroup>
+        <Authors>Marc Wittke</Authors>
+        <Company>anic GmbH</Company>
+        <Copyright>All rights reserved. Distributed under the terms of the MIT License.</Copyright>
+        <Description>Integration of Backend.Fx abstraction and implementation into ASP.NET applications</Description>
+        <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+        <PackageLicense>MIT</PackageLicense>
+        <PackageProjectUrl>https://github.com/backend-fx/core</PackageProjectUrl>
+        <Product>Backend.Fx</Product>
+        <RepositoryType>Git</RepositoryType>
+        <RepositoryUrl>https://github.com/backend-fx/core.git</RepositoryUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    </ItemGroup>
+  
+    <ItemGroup>
+        <PackageReference Include="Backend.Fx.Execution.Abstractions" Version="1.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+        <PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.1.2"/>
+    </ItemGroup>
+
+
+</Project>
