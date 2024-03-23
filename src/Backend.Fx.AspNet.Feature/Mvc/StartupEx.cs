@@ -22,8 +22,6 @@ public static class StartupEx
         TBackendFxApplication application)
         where TBackendFxApplication : IBackendFxApplication
     {
-        app.UseWaitForBootMiddleware<TBackendFxApplication>();
-
         app.Use(async (context, requestDelegate) =>
         {
             await application
