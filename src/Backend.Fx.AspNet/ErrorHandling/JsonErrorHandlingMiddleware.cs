@@ -37,7 +37,7 @@ namespace Backend.Fx.AspNet.ErrorHandling
             return Task.FromResult(accept.Any(mth => mth.Type == "application" && mth.SubType == "json"));
         }
 
-        protected override async Task HandleClientError(HttpContext context, int httpStatusCode, string message, ClientException exception)
+        protected override async Task HandleClientError(HttpContext context, int httpStatusCode, string message, Exception exception)
         {
             if (context.Response.HasStarted)
             {
@@ -47,8 +47,9 @@ namespace Backend.Fx.AspNet.ErrorHandling
 
             // convention: only the errors array will be transmitted to the client, allowing technical (possibly
             // revealing) information in the exception message.
-            Errors errors = exception.HasErrors()
-                                ? exception.Errors
+            var clientException = exception as ClientException;
+            Errors errors = clientException?.HasErrors() == true
+                                ? clientException.Errors
                                 : new Errors($"HTTP{httpStatusCode}: {message}");
 
             context.Response.StatusCode = httpStatusCode;

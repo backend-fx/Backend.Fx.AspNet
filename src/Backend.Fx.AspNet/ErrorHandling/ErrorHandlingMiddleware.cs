@@ -37,7 +37,8 @@ public abstract class ErrorHandlingMiddleware
             {
                 if (tooManyRequestsException.RetryAfter > 0)
                 {
-                    context.Response.Headers.Add("Retry-After", tooManyRequestsException.RetryAfter.ToString(CultureInfo.InvariantCulture));
+                    context.Response.Headers.Add("Retry-After",
+                        tooManyRequestsException.RetryAfter.ToString(CultureInfo.InvariantCulture));
                 }
 
                 await HandleClientError(context, 429, "TooManyRequests", tooManyRequestsException);
@@ -48,23 +49,36 @@ public abstract class ErrorHandlingMiddleware
             }
             catch (NotFoundException notFoundException)
             {
-                await HandleClientError(context, (int) HttpStatusCode.NotFound, HttpStatusCode.NotFound.ToString(), notFoundException);
+                await HandleClientError(context, (int)HttpStatusCode.NotFound, HttpStatusCode.NotFound.ToString(),
+                    notFoundException);
             }
             catch (ConflictedException conflictedException)
             {
-                await HandleClientError(context, (int) HttpStatusCode.Conflict, HttpStatusCode.Conflict.ToString(), conflictedException);
+                await HandleClientError(context, (int)HttpStatusCode.Conflict, HttpStatusCode.Conflict.ToString(),
+                    conflictedException);
             }
             catch (ForbiddenException forbiddenException)
             {
-                await HandleClientError(context, (int) HttpStatusCode.Forbidden, HttpStatusCode.Forbidden.ToString(), forbiddenException);
+                await HandleClientError(context, (int)HttpStatusCode.Forbidden, HttpStatusCode.Forbidden.ToString(),
+                    forbiddenException);
             }
             catch (UnauthorizedException unauthorizedException)
             {
-                await HandleClientError(context, (int) HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized.ToString(), unauthorizedException);
+                await HandleClientError(context, (int)HttpStatusCode.Unauthorized,
+                    HttpStatusCode.Unauthorized.ToString(), unauthorizedException);
             }
             catch (ClientException clientException)
             {
-                await HandleClientError(context, (int) HttpStatusCode.BadRequest, HttpStatusCode.BadRequest.ToString(), clientException);
+                await HandleClientError(context, (int)HttpStatusCode.BadRequest, HttpStatusCode.BadRequest.ToString(),
+                    clientException);
+            }
+            catch (ArgumentException argumentException)
+            {
+                await HandleClientError(
+                    context,
+                    (int)HttpStatusCode.BadRequest,
+                    argumentException.Message,
+                    argumentException);
             }
             catch (Exception exception)
             {
@@ -79,7 +93,11 @@ public abstract class ErrorHandlingMiddleware
 
     protected abstract Task<bool> ShouldHandle(HttpContext context);
 
-    protected abstract Task HandleClientError(HttpContext context, int httpStatusCode, string message, ClientException exception);
+    protected abstract Task HandleClientError(
+        HttpContext context,
+        int httpStatusCode,
+        string message,
+        Exception exception);
 
     protected abstract Task HandleServerError(HttpContext context, Exception exception);
 }

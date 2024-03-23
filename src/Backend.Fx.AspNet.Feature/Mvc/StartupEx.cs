@@ -9,22 +9,28 @@ namespace Backend.Fx.AspNet.Mvc;
 [PublicAPI]
 public static class StartupEx
 {
-    public static void AddBackendFxMvcApplication(this IServiceCollection services, IBackendFxApplication application)
+    public static void AddBackendFxMvcApplication<TBackendFxApplication>(
+        this IServiceCollection services,
+        TBackendFxApplication application)
+        where TBackendFxApplication : IBackendFxApplication
     {
         application.EnableFeature(new AspNetMvcFeature(services));
     }
 
-    public static void UseBackendFxMvcApplication(this IApplicationBuilder app, IBackendFxApplication application)
+    public static void UseBackendFxMvcApplication<TBackendFxApplication>(
+        this IApplicationBuilder app,
+        TBackendFxApplication application)
+        where TBackendFxApplication : IBackendFxApplication
     {
         app.Use(async (context, requestDelegate) =>
         {
-            // make sure it finished the boot process
-            await application.WaitForBootAsync().ConfigureAwait(false);
-
-            await application.Invoker.InvokeAsync(
-                (_, _) => requestDelegate.Invoke(),
-                context.User.Identity ?? new AnonymousIdentity(),
-                context.RequestAborted);
+            await application
+                .Invoker
+                .InvokeAsync(
+                    (_, _) => requestDelegate.Invoke(),
+                    context.User.Identity ?? new AnonymousIdentity(),
+                    context.RequestAborted)
+                .ConfigureAwait(false);
         });
     }
 }
