@@ -1,9 +1,7 @@
-using System.Net;
 using Backend.Fx.Execution;
 using Backend.Fx.Execution.Pipeline;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Backend.Fx.AspNet.Mvc;
@@ -11,15 +9,21 @@ namespace Backend.Fx.AspNet.Mvc;
 [PublicAPI]
 public static class StartupEx
 {
-    public static void AddBackendFxMvcApplication(this IServiceCollection services, IBackendFxApplication application)
+    public static void AddBackendFxMvcApplication<TBackendFxApplication>(
+        this IServiceCollection services,
+        TBackendFxApplication application)
+        where TBackendFxApplication : IBackendFxApplication
     {
         application.EnableFeature(new AspNetMvcFeature(services));
     }
 
-    public static void UseBackendFxMvcApplication(this IApplicationBuilder app, IBackendFxApplication application)
+    public static void UseBackendFxMvcApplication<TBackendFxApplication>(
+        this IApplicationBuilder app,
+        TBackendFxApplication application)
+        where TBackendFxApplication : IBackendFxApplication
     {
-        app.UseWaitForBootMiddleware();
-        
+        app.UseWaitForBootMiddleware<TBackendFxApplication>();
+
         app.Use(async (context, requestDelegate) =>
         {
             await application

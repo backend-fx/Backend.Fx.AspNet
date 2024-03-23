@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Http;
 
 namespace Backend.Fx.AspNet;
 
-public class WaitForBootMiddleware
+public class WaitForBootMiddleware<TBackendFxApplication> where TBackendFxApplication : IBackendFxApplication
 {
     private readonly RequestDelegate _next;
     private readonly IBackendFxApplication _application;
 
-    public WaitForBootMiddleware(RequestDelegate next, IBackendFxApplication application)
+    public WaitForBootMiddleware(RequestDelegate next, TBackendFxApplication application)
     {
         _next = next;
         _application = application;
@@ -41,8 +41,9 @@ public class WaitForBootMiddleware
 
 public static class WaitForBootMiddlewareExtensions
 {
-    public static IApplicationBuilder UseWaitForBootMiddleware(this IApplicationBuilder builder)
+    public static IApplicationBuilder UseWaitForBootMiddleware<TBackendFxApplication>(this IApplicationBuilder builder)
+        where TBackendFxApplication : IBackendFxApplication
     {
-        return builder.UseMiddleware<WaitForBootMiddleware>();
+        return builder.UseMiddleware<WaitForBootMiddleware<TBackendFxApplication>>();
     }
 }
