@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Backend.Fx.Execution;
 using Backend.Fx.Logging;
 using JetBrains.Annotations;
@@ -19,10 +19,10 @@ public class BackendFxApplicationControllerActivator : IControllerActivator
     {
         _application = application;
     }
-        
+
     public virtual object Create(ControllerContext c)
     {
-        Type requestedControllerType = c.ActionDescriptor.ControllerTypeInfo.AsType();
+        var requestedControllerType = c.ActionDescriptor.ControllerTypeInfo.AsType();
         return _application.CompositionRoot.ServiceProvider.GetRequiredService(requestedControllerType);
     }
 

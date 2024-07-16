@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Backend.Fx.Execution;
 using Backend.Fx.Logging;
 using JetBrains.Annotations;
@@ -18,14 +18,13 @@ public class BackendFxApplicationViewComponentActivator : IViewComponentActivato
     {
         _application = application;
     }
-        
+
     public object Create(ViewComponentContext context)
     {
-        Type requestedViewComponentType = context.ViewComponentDescriptor.TypeInfo.AsType();
+        var requestedViewComponentType = context.ViewComponentDescriptor.TypeInfo.AsType();
         return _application.CompositionRoot.ServiceProvider.GetRequiredService(requestedViewComponentType);
     }
-        
+
     public void Release(ViewComponentContext context, object viewComponent)
-    {
-    }
+    { }
 }

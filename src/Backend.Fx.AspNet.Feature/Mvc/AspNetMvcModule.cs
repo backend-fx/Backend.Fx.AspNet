@@ -15,6 +15,7 @@ public class AspNetMvcModule : IModule
     {
         _assemblies = assemblies;
     }
+
     public void Register(ICompositionRoot compositionRoot)
     {
         RegisterAllImplementationsOf<ControllerBase>(compositionRoot);

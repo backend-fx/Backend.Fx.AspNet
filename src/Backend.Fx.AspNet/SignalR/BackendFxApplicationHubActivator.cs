@@ -14,7 +14,6 @@ public class BackendFxApplicationHubActivator<T> : IHubActivator<T> where T : Hu
     private readonly ICompositionRoot _compositionRoot;
     private readonly ILogger _logger = Log.Create<BackendFxApplicationHubActivator<T>>();
 
-
     public BackendFxApplicationHubActivator(ICompositionRoot compositionRoot)
     {
         _compositionRoot = compositionRoot;

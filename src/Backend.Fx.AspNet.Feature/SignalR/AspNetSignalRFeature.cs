@@ -17,6 +17,7 @@ public class AspNetSignalRFeature : Feature
 
     public override void Enable(IBackendFxApplication application)
     {
-        application.CompositionRoot.RegisterModules(new AspNetSignalRModule(_frameworkServices, application.Assemblies));
+        application.CompositionRoot.RegisterModules(
+            new AspNetSignalRModule(_frameworkServices, application.Assemblies));
     }
 }

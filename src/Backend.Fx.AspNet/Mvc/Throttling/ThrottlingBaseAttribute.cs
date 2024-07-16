@@ -1,4 +1,4 @@
-﻿using JetBrains.Annotations;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Backend.Fx.AspNet.Mvc.Throttling;

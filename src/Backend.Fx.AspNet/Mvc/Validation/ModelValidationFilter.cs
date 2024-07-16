@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Backend.Fx.Exceptions;
@@ -18,10 +18,11 @@ public abstract class ModelValidationFilter : IActionFilter
 
     protected static void LogErrors(FilterContext context, string controllerName, Errors errors)
     {
-        ILogger logger = TryGetControllerType(controllerName, out Type controllerType)
+        var logger = TryGetControllerType(controllerName, out var controllerType)
             ? Log.Create(controllerType)
             : Log.Create<ModelValidationFilter>();
-        logger.LogWarning("Model validation failed during {Method} {RequestUrl}: {@Errors}", 
+        logger.LogWarning(
+            "Model validation failed during {Method} {RequestUrl}: {@Errors}",
             context.HttpContext.Request.Method,
             context.HttpContext.Request.GetDisplayUrl(),
             errors);

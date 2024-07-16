@@ -1,4 +1,4 @@
-﻿using Backend.Fx.AspNet.ErrorHandling;
+using Backend.Fx.AspNet.ErrorHandling;
 using Backend.Fx.Exceptions;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +17,8 @@ public class ReturnModelStateAsJsonModelValidationFilter : ModelValidationFilter
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         if (context.ModelState.IsValid || !AcceptsJson(context)) return;
-            
-        Errors errors = context.ModelState.ToErrorsDictionary();
+
+        var errors = context.ModelState.ToErrorsDictionary();
         LogErrors(context, context.Controller.ToString(), errors);
         context.Result = CreateResult(errors);
     }
@@ -29,6 +29,5 @@ public class ReturnModelStateAsJsonModelValidationFilter : ModelValidationFilter
     }
 
     public override void OnActionExecuted(ActionExecutedContext context)
-    {
-    }
+    { }
 }

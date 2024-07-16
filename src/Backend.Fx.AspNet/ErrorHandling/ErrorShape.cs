@@ -5,13 +5,13 @@ namespace Backend.Fx.AspNet.ErrorHandling;
 
 public class ErrorShape
 {
-    public Dictionary<string,string[]> Errors { get; set; }
+    public Dictionary<string, string[]> Errors { get; set; }
 
     public string[] GenericError
     {
         get
         {
-            Errors.TryGetValue("_error", out var genericError);
+            Errors.TryGetValue("_error", out string[] genericError);
             return genericError;
         }
     }

@@ -1,4 +1,4 @@
-﻿using Backend.Fx.Exceptions;
+using Backend.Fx.Exceptions;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -21,7 +21,7 @@ public class RedirectBackToGetActionModelValidationFilter : ModelValidationFilte
     {
         if (!context.ModelState.IsValid && AcceptsHtml(context))
         {
-            Errors errors = context.ModelState.ToErrorsDictionary();
+            var errors = context.ModelState.ToErrorsDictionary();
             LogErrors(context, context.Controller.ToString(), errors);
 
             // return the same view, using the posted model again
@@ -30,7 +30,7 @@ public class RedirectBackToGetActionModelValidationFilter : ModelValidationFilte
             context.Result = new ViewResult
             {
                 ViewName = context.RouteData.Values["action"].ToString(),
-                ViewData = viewData,
+                ViewData = viewData
             };
         }
     }
@@ -48,13 +48,12 @@ public class RedirectBackToGetActionModelValidationFilter : ModelValidationFilte
             context.Result = new ViewResult
             {
                 ViewName = context.RouteData.Values["action"].ToString(),
-                ViewData = viewData,
+                ViewData = viewData
             };
             context.ExceptionHandled = true;
         }
     }
 
     protected virtual void BeforeRedirect(ViewDataDictionary viewData)
-    {
-    }
+    { }
 }

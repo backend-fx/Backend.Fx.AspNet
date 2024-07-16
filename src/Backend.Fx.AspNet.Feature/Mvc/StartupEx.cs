@@ -22,15 +22,16 @@ public static class StartupEx
         TBackendFxApplication application)
         where TBackendFxApplication : IBackendFxApplication
     {
-        app.Use(async (context, requestDelegate) =>
-        {
-            await application
-                .Invoker
-                .InvokeAsync(
-                    (_, _) => requestDelegate.Invoke(),
-                    context.User.Identity ?? new AnonymousIdentity(),
-                    context.RequestAborted)
-                .ConfigureAwait(false);
-        });
+        app.Use(
+            async (context, requestDelegate) =>
+            {
+                await application
+                    .Invoker
+                    .InvokeAsync(
+                        (_, _) => requestDelegate.Invoke(),
+                        context.User.Identity ?? new AnonymousIdentity(),
+                        context.RequestAborted)
+                    .ConfigureAwait(false);
+            });
     }
 }
