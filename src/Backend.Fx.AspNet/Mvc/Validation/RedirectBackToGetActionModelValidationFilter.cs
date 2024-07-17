@@ -19,27 +19,28 @@ public class RedirectBackToGetActionModelValidationFilter : ModelValidationFilte
 
     public override void OnActionExecuting(ActionExecutingContext context)
     {
-        if (!context.ModelState.IsValid && AcceptsHtml(context))
+        if (!context.ModelState.IsValid && AcceptsHtml(context) && context.RouteData.Values.ContainsKey("action"))
         {
-            Errors errors = context.ModelState.ToErrorsDictionary();
-            LogErrors(context, context.Controller.ToString(), errors);
+            var errors = context.ModelState.ToErrorsDictionary();
+            LogErrors(context, context.Controller.ToString() ?? "UnknownController", errors);
 
             // return the same view, using the posted model again
             var viewData = new ViewDataDictionary(_modelMetadataProvider, context.ModelState);
             BeforeRedirect(viewData);
             context.Result = new ViewResult
             {
-                ViewName = context.RouteData.Values["action"].ToString(),
-                ViewData = viewData,
+                ViewName = context.RouteData.Values["action"]!.ToString(),
+                ViewData = viewData
             };
         }
     }
 
     public override void OnActionExecuted(ActionExecutedContext context)
     {
-        if (context.Exception is ClientException cex && AcceptsHtml(context))
+        if (context.Exception is ClientException cex && AcceptsHtml(context) &&
+            context.RouteData.Values.ContainsKey("action"))
         {
-            LogErrors(context, context.Controller.ToString(), cex.Errors);
+            LogErrors(context, context.Controller.ToString() ?? "UnknownController", cex.Errors);
             context.ModelState.Add(cex.Errors);
 
             // return the same view, using the posted model again
@@ -47,14 +48,13 @@ public class RedirectBackToGetActionModelValidationFilter : ModelValidationFilte
             BeforeRedirect(viewData);
             context.Result = new ViewResult
             {
-                ViewName = context.RouteData.Values["action"].ToString(),
-                ViewData = viewData,
+                ViewName = context.RouteData.Values["action"]!.ToString(),
+                ViewData = viewData
             };
             context.ExceptionHandled = true;
         }
     }
 
     protected virtual void BeforeRedirect(ViewDataDictionary viewData)
-    {
-    }
+    { }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
@@ -37,39 +37,63 @@ public abstract class ErrorHandlingMiddleware
             {
                 if (tooManyRequestsException.RetryAfter > 0)
                 {
-                    context.Response.Headers.Add("Retry-After",
+                    context.Response.Headers.Add(
+                        "Retry-After",
                         tooManyRequestsException.RetryAfter.ToString(CultureInfo.InvariantCulture));
                 }
 
-                await HandleClientError(context, 429, "TooManyRequests", tooManyRequestsException);
+                await HandleClientError(
+                    context,
+                    (int)HttpStatusCode.TooManyRequests,
+                    HttpStatusCode.TooManyRequests.ToString(),
+                    tooManyRequestsException);
             }
             catch (UnprocessableException uex)
             {
-                await HandleClientError(context, 422, "Unprocessable", uex);
+                await HandleClientError(
+                    context,
+                    (int)HttpStatusCode.UnprocessableEntity,
+                    HttpStatusCode.UnprocessableEntity.ToString(),
+                    uex);
             }
             catch (NotFoundException notFoundException)
             {
-                await HandleClientError(context, (int)HttpStatusCode.NotFound, HttpStatusCode.NotFound.ToString(),
+                await HandleClientError(
+                    context,
+                    (int)HttpStatusCode.NotFound,
+                    HttpStatusCode.NotFound.ToString(),
                     notFoundException);
             }
             catch (ConflictedException conflictedException)
             {
-                await HandleClientError(context, (int)HttpStatusCode.Conflict, HttpStatusCode.Conflict.ToString(),
+                await HandleClientError(
+                    context,
+                    (int)HttpStatusCode.Conflict,
+                    HttpStatusCode.Conflict.ToString(),
                     conflictedException);
             }
             catch (ForbiddenException forbiddenException)
             {
-                await HandleClientError(context, (int)HttpStatusCode.Forbidden, HttpStatusCode.Forbidden.ToString(),
+                await HandleClientError(
+                    context,
+                    (int)HttpStatusCode.Forbidden,
+                    HttpStatusCode.Forbidden.ToString(),
                     forbiddenException);
             }
             catch (UnauthorizedException unauthorizedException)
             {
-                await HandleClientError(context, (int)HttpStatusCode.Unauthorized,
-                    HttpStatusCode.Unauthorized.ToString(), unauthorizedException);
+                await HandleClientError(
+                    context,
+                    (int)HttpStatusCode.Unauthorized,
+                    HttpStatusCode.Unauthorized.ToString(),
+                    unauthorizedException);
             }
             catch (ClientException clientException)
             {
-                await HandleClientError(context, (int)HttpStatusCode.BadRequest, HttpStatusCode.BadRequest.ToString(),
+                await HandleClientError(
+                    context,
+                    (int)HttpStatusCode.BadRequest,
+                    HttpStatusCode.BadRequest.ToString(),
                     clientException);
             }
             catch (ArgumentException argumentException)

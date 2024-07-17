@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Backend.Fx.AspNet\Backend.Fx.AspNet.csproj" />
+        <ProjectReference Include="..\Backend.Fx.AspNet\Backend.Fx.AspNet.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -21,8 +21,7 @@ public class AspNetMvcFeature : Feature
     public override void Enable(IBackendFxApplication application)
     {
         // tell ASP.Net Core to use BackendFx to create controller instances 
-        _frameworkServices.AddSingleton<IControllerActivator>(
-            new BackendFxApplicationControllerActivator(application));
+        _frameworkServices.AddSingleton<IControllerActivator>(new BackendFxApplicationControllerActivator(application));
 
         // tell ASP.Net Core to use BackendFx to create view component instances
         _frameworkServices.AddSingleton<IViewComponentActivator>(

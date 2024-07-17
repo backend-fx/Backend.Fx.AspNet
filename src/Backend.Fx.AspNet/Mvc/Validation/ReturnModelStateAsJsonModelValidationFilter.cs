@@ -17,9 +17,9 @@ public class ReturnModelStateAsJsonModelValidationFilter : ModelValidationFilter
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         if (context.ModelState.IsValid || !AcceptsJson(context)) return;
-            
-        Errors errors = context.ModelState.ToErrorsDictionary();
-        LogErrors(context, context.Controller.ToString(), errors);
+
+        var errors = context.ModelState.ToErrorsDictionary();
+        LogErrors(context, context.Controller.ToString() ?? "UnknownController", errors);
         context.Result = CreateResult(errors);
     }
 
@@ -29,6 +29,5 @@ public class ReturnModelStateAsJsonModelValidationFilter : ModelValidationFilter
     }
 
     public override void OnActionExecuted(ActionExecutedContext context)
-    {
-    }
+    { }
 }

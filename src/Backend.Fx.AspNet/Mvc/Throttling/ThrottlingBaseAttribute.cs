@@ -1,10 +1,15 @@
-﻿using JetBrains.Annotations;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Backend.Fx.AspNet.Mvc.Throttling;
 
 public abstract class ThrottlingBaseAttribute : ActionFilterAttribute
 {
+    protected ThrottlingBaseAttribute(string name)
+    {
+        Name = name;
+    }
+
     /// <summary>
     /// A unique name for this Throttle.
     /// </summary>
@@ -18,7 +23,7 @@ public abstract class ThrottlingBaseAttribute : ActionFilterAttribute
     /// The number of seconds clients must wait before executing this decorated route again.
     /// </summary>
     [UsedImplicitly]
-    public int Seconds { get; set; }
+    public int Seconds { get; set; } = 10;
 
     /// <summary>
     /// A text message that will be sent to the client upon throttling. You can include the token {0} to

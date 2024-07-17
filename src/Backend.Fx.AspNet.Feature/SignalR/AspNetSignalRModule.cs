@@ -19,17 +19,19 @@ public class AspNetSignalRModule : IModule
         _frameworkServices = frameworkServices;
         _assemblies = assemblies;
     }
+
     public void Register(ICompositionRoot compositionRoot)
     {
         foreach (var hubType in _assemblies.GetImplementingTypes<Hub>())
         {
             // register the singleton hub instance
             compositionRoot.Register(new ServiceDescriptor(hubType, hubType, ServiceLifetime.Singleton));
-            
+
             // register a respective hub factory in the framework service collection
-            Type hubActivatorServiceType = typeof(IHubActivator<>).MakeGenericType(hubType);
-            Type hubActivatorImplementationType = typeof(BackendFxApplicationHubActivator<>).MakeGenericType(hubType);
-            object hubActivatorImplementation = Activator.CreateInstance(hubActivatorImplementationType, compositionRoot);
+            var hubActivatorServiceType = typeof(IHubActivator<>).MakeGenericType(hubType);
+            var hubActivatorImplementationType = typeof(BackendFxApplicationHubActivator<>).MakeGenericType(hubType);
+            object hubActivatorImplementation
+                = Activator.CreateInstance(hubActivatorImplementationType, compositionRoot);
             Debug.Assert(hubActivatorImplementation != null, nameof(hubActivatorImplementation) + " != null");
             _frameworkServices.AddSingleton(hubActivatorServiceType, hubActivatorImplementation);
         }

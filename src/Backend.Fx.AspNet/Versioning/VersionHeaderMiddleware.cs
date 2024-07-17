@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Primitives;
 namespace Backend.Fx.AspNet.Versioning;
 
 [PublicAPI]
-public class VersionHeaderMiddleware 
+public class VersionHeaderMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly string _assemblyName;
@@ -20,16 +20,18 @@ public class VersionHeaderMiddleware
         var entryAssembly = Assembly.GetEntryAssembly();
         if (entryAssembly == null)
         {
-            throw new InvalidOperationException("Unable to determine the entry assembly. The Version Header Middleware cannot be used in this environment");
+            throw new InvalidOperationException(
+                "Unable to determine the entry assembly. The Version Header Middleware cannot be used in this environment");
         }
 
-        AssemblyName entryAssemblyName = entryAssembly.GetName();
+        var entryAssemblyName = entryAssembly.GetName();
         if (entryAssemblyName.Version == null)
         {
-            throw new InvalidOperationException("Unable to determine the version of the entry assembly. The Version Header Middleware cannot be used in this environment");
+            throw new InvalidOperationException(
+                "Unable to determine the version of the entry assembly. The Version Header Middleware cannot be used in this environment");
         }
 
-        _assemblyName = entryAssemblyName.Name;
+        _assemblyName = entryAssemblyName.Name ?? "Unknown Assembly";
         _version = entryAssemblyName.Version.ToString(3);
     }
 

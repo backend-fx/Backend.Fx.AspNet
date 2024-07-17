@@ -18,10 +18,11 @@ public abstract class ModelValidationFilter : IActionFilter
 
     protected static void LogErrors(FilterContext context, string controllerName, Errors errors)
     {
-        ILogger logger = TryGetControllerType(controllerName, out Type controllerType)
+        var logger = TryGetControllerType(controllerName, out var controllerType)
             ? Log.Create(controllerType)
             : Log.Create<ModelValidationFilter>();
-        logger.LogWarning("Model validation failed during {Method} {RequestUrl}: {@Errors}", 
+        logger.LogWarning(
+            "Model validation failed during {Method} {RequestUrl}: {@Errors}",
             context.HttpContext.Request.Method,
             context.HttpContext.Request.GetDisplayUrl(),
             errors);
@@ -30,26 +31,28 @@ public abstract class ModelValidationFilter : IActionFilter
     protected static bool AcceptsJson(FilterContext context)
     {
         IList<MediaTypeHeaderValue> accept = context.HttpContext.Request.GetTypedHeaders().Accept;
-        return accept.Any(mth => mth.Type == "application" && mth.SubType == "json") == true;
+        return accept.Any(mth => mth.MatchesMediaType("application/json"));
     }
 
     protected static bool AcceptsHtml(FilterContext context)
     {
         IList<MediaTypeHeaderValue> accept = context.HttpContext.Request.GetTypedHeaders().Accept;
-        return accept.Any(mth => mth.Type == "text" && mth.SubType == "html") == true;
+        return accept.Any(mth => mth.MatchesMediaType("text/html"));
     }
 
     private static bool TryGetControllerType(string controllerName, out Type type)
     {
+        Type? maybeNullType;
         try
         {
-            type = Type.GetType(controllerName);
+            maybeNullType = Type.GetType(controllerName);
         }
         catch
         {
-            type = null;
+            maybeNullType = null!;
         }
 
-        return type != null;
+        type = maybeNullType!;
+        return maybeNullType != null;
     }
 }
