@@ -31,7 +31,7 @@ public class VersionHeaderMiddleware
                 "Unable to determine the version of the entry assembly. The Version Header Middleware cannot be used in this environment");
         }
 
-        _assemblyName = entryAssemblyName.Name;
+        _assemblyName = entryAssemblyName.Name ?? "Unknown Assembly";
         _version = entryAssemblyName.Version.ToString(3);
     }
 

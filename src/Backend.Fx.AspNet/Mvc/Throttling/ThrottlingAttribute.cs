@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Backend.Fx.Exceptions;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -14,6 +14,10 @@ namespace Backend.Fx.AspNet.Mvc.Throttling;
 [PublicAPI]
 public class ThrottlingAttribute : ThrottlingBaseAttribute
 {
+    public ThrottlingAttribute(string name) : base(name)
+    {
+    }
+
     public override void OnActionExecuting(ActionExecutingContext actionContext)
     {
         var cache = actionContext.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();

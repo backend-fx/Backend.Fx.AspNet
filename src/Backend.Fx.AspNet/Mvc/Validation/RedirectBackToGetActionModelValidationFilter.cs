@@ -1,4 +1,4 @@
-using Backend.Fx.Exceptions;
+﻿using Backend.Fx.Exceptions;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -19,17 +19,17 @@ public class RedirectBackToGetActionModelValidationFilter : ModelValidationFilte
 
     public override void OnActionExecuting(ActionExecutingContext context)
     {
-        if (!context.ModelState.IsValid && AcceptsHtml(context))
+        if (!context.ModelState.IsValid && AcceptsHtml(context) && context.RouteData.Values.ContainsKey("action"))
         {
             var errors = context.ModelState.ToErrorsDictionary();
-            LogErrors(context, context.Controller.ToString(), errors);
+            LogErrors(context, context.Controller.ToString() ?? "UnknownController", errors);
 
             // return the same view, using the posted model again
             var viewData = new ViewDataDictionary(_modelMetadataProvider, context.ModelState);
             BeforeRedirect(viewData);
             context.Result = new ViewResult
             {
-                ViewName = context.RouteData.Values["action"].ToString(),
+                ViewName = context.RouteData.Values["action"]!.ToString(),
                 ViewData = viewData
             };
         }
@@ -37,9 +37,10 @@ public class RedirectBackToGetActionModelValidationFilter : ModelValidationFilte
 
     public override void OnActionExecuted(ActionExecutedContext context)
     {
-        if (context.Exception is ClientException cex && AcceptsHtml(context))
+        if (context.Exception is ClientException cex && AcceptsHtml(context) &&
+            context.RouteData.Values.ContainsKey("action"))
         {
-            LogErrors(context, context.Controller.ToString(), cex.Errors);
+            LogErrors(context, context.Controller.ToString() ?? "UnknownController", cex.Errors);
             context.ModelState.Add(cex.Errors);
 
             // return the same view, using the posted model again
@@ -47,7 +48,7 @@ public class RedirectBackToGetActionModelValidationFilter : ModelValidationFilte
             BeforeRedirect(viewData);
             context.Result = new ViewResult
             {
-                ViewName = context.RouteData.Values["action"].ToString(),
+                ViewName = context.RouteData.Values["action"]!.ToString(),
                 ViewData = viewData
             };
             context.ExceptionHandled = true;

@@ -1,4 +1,4 @@
-using Backend.Fx.AspNet.ErrorHandling;
+﻿using Backend.Fx.AspNet.ErrorHandling;
 using Backend.Fx.Exceptions;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,7 @@ public class ReturnModelStateAsJsonModelValidationFilter : ModelValidationFilter
         if (context.ModelState.IsValid || !AcceptsJson(context)) return;
 
         var errors = context.ModelState.ToErrorsDictionary();
-        LogErrors(context, context.Controller.ToString(), errors);
+        LogErrors(context, context.Controller.ToString() ?? "UnknownController", errors);
         context.Result = CreateResult(errors);
     }
 

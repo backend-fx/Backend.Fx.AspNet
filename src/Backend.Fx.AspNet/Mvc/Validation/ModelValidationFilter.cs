@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Backend.Fx.Exceptions;
@@ -31,26 +31,28 @@ public abstract class ModelValidationFilter : IActionFilter
     protected static bool AcceptsJson(FilterContext context)
     {
         IList<MediaTypeHeaderValue> accept = context.HttpContext.Request.GetTypedHeaders().Accept;
-        return accept.Any(mth => mth.Type == "application" && mth.SubType == "json") == true;
+        return accept.Any(mth => mth.MatchesMediaType("application/json"));
     }
 
     protected static bool AcceptsHtml(FilterContext context)
     {
         IList<MediaTypeHeaderValue> accept = context.HttpContext.Request.GetTypedHeaders().Accept;
-        return accept.Any(mth => mth.Type == "text" && mth.SubType == "html") == true;
+        return accept.Any(mth => mth.MatchesMediaType("text/html"));
     }
 
     private static bool TryGetControllerType(string controllerName, out Type type)
     {
+        Type? maybeNullType;
         try
         {
-            type = Type.GetType(controllerName);
+            maybeNullType = Type.GetType(controllerName);
         }
         catch
         {
-            type = null;
+            maybeNullType = null!;
         }
 
-        return type != null;
+        type = maybeNullType!;
+        return maybeNullType != null;
     }
 }
