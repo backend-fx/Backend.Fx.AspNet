@@ -6,6 +6,7 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <IsPackable>true</IsPackable>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
 
