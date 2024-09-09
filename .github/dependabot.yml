@@ -12,3 +12,10 @@ updates:
   open-pull-requests-limit: 10
   allow:
   - dependency-type: direct
+  groups:
+    dotnet-minor:
+      patterns:
+      - "*"
+      update-types:
+      - "minor"
+      - "patch"
