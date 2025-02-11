@@ -1,4 +1,5 @@
-﻿using Backend.Fx.AspNet.ErrorHandling;
+using System.Net;
+using Backend.Fx.AspNet.ErrorHandling;
 using Backend.Fx.Exceptions;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
