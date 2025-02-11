@@ -21,6 +21,7 @@ public class ReturnModelStateAsJsonModelValidationFilter : ModelValidationFilter
         var errors = context.ModelState.ToErrorsDictionary();
         LogErrors(context, context.Controller.ToString() ?? "UnknownController", errors);
         context.Result = CreateResult(errors);
+        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
     }
 
     protected virtual IActionResult CreateResult(Errors errors)
